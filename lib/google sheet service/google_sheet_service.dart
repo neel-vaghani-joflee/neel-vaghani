@@ -1,5 +1,7 @@
 import 'package:gsheets/gsheets.dart';
-import 'package:tiny_expence/Model/model.dart';
+import 'package:tiny_expence/Model/ExpensesModel.dart';
+import 'package:tiny_expence/Model/IncomeModel.dart';
+import 'package:tiny_expence/Model/TransferModel.dart';
 
 const _credentials = r'''
 {
@@ -17,19 +19,6 @@ const _credentials = r'''
 ''';
 const _spreadSheedId = '1esNkQhKyzlq8FHtgttioS9SXF7BWEBLGqJz1TR19xcU';
 
-// Future insertData() async {
-//   final gSheets = GSheets(_credentials);
-//   final ss = await gSheets.spreadsheet(_spreadSheetId);
-//   var sheet = ss.worksheetByTitle('All Transactions');
-
-//   sheet ??= await ss.addWorksheet('All Transactions');
-
-//   await sheet.values.insertValue('Entertainment', column: 5, row: 6);
-//   await sheet.values.insertValue('Gasbill', column: 5, row: 7);
-//   await sheet.values.insertValue('Invest In Office', column: 5, row: 8);
-//   await sheet.values.insertValue('Saving', column: 5, row: 9);
-//   await sheet.values.insertValue('Utility', column: 5, row: 10);
-// }
 class GoogleSheetService {
   final GSheets _gSheets = GSheets(_credentials);
   late Spreadsheet _spreadsheet;
@@ -37,20 +26,33 @@ class GoogleSheetService {
 
   Future<void> init() async {
     _spreadsheet = await _gSheets.spreadsheet(_spreadSheedId);
-    _userSheets = _spreadsheet.worksheetByTitle('All Transactions')!;
+    _userSheets = _spreadsheet.worksheetByTitle('Data')!;
   }
 
-  Future<bool> insert(User user) async {
+  // Expenses Entry
+  Future<bool> insertExpenses(ExpensesElement expensesElement) async {
     await init();
-    try {
-      return _userSheets.values.map.appendRows(
 
-          // userElement.date,
-          // userElement.toGsheets(),
-          );
-    } catch (e) {
-      print(e);
-      return false;
-    }
+    print(await _userSheets.values.value(column: 2, row: 10));
+    return _userSheets.values.map.insertRowByKey(
+      expensesElement.date,
+      expensesElement.toExpensesSheet(),
+    );
+  }
+
+  // Income Entry
+  Future<bool> insertIncome(IncomeElement incomeElement) async {
+    await init();
+    return _userSheets.values.map.insertRowByKey(
+      incomeElement.date,
+      incomeElement.toIncomeSheet(),
+    );
+  }
+
+  // Transfer Entry
+  Future<bool> insertTransfer(TransferElement transferElement) async {
+    await init();
+    return _userSheets.values.map.insertRowByKey(
+        transferElement.date, transferElement.toTransferSheet());
   }
 }

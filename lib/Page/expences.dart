@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:tiny_expence/Model/model.dart';
+import 'package:tiny_expence/Model/ExpensesModel.dart';
 import 'package:tiny_expence/google%20sheet%20service/google_sheet_service.dart';
 
 class ExpensesPage extends StatefulWidget {
@@ -134,7 +134,7 @@ class _ExpensesPageState extends State<ExpensesPage> {
               // Description
               TextField(
                 controller: descriptionEditingController,
-                maxLines: 3,
+                maxLines: 4,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   suffixIcon: Icon(
@@ -148,13 +148,8 @@ class _ExpensesPageState extends State<ExpensesPage> {
               ),
               ElevatedButton(
                 onPressed: () {
-                  // print(dateEditingController.text);
-                  print(amountEditingController.text);
-                  // print(fromAccountEditingController.text);
-                  // print(categoryEditingController.text);
-                  // print(descriptionEditingController.text);
-                  _googleSheetService.insert(
-                    UserElement(
+                  _googleSheetService.insertExpenses(
+                    ExpensesElement(
                         date: dateEditingController.text,
                         amount: amountEditingController.text,
                         fromAccount: fromAccountEditingController.text,
